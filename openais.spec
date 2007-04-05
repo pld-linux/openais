@@ -8,6 +8,7 @@ Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
 # Source0-md5:	a1cfcd0e8f555132353b780c130d8220
 URL:		http://developer.osdl.org/dev/openais/
+Requires(post,postun):	/sbin/ldconfig
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
