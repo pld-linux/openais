@@ -7,9 +7,15 @@ Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
 # Source0-md5:	a1cfcd0e8f555132353b780c130d8220
 URL:		http://developer.osdl.org/dev/openais/
-Requires(post):	/sbin/chkconfig
+Requires(post,preun):	/sbin/chkconfig
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/bin/getgid
+Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
-Requires(preun):	/sbin/chkconfig
+Provides:	group(ais)
+Provides:	user(ais)
 #ExclusiveArch:	i386 ppc x86_64 ppc64 ia64 s390 s390x
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -33,6 +39,7 @@ using openais APIs.
 %{__make} \
 	CC="%{__cc}" \
 	CFLAGS="%{rpmcflags}" \
+	LCRSODIR=%{_libdir}/lcrso
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -46,19 +53,20 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 	STATICLIBS=NO
 
-install -d $RPM_BUILD_ROOT%{_initrddir}
-install init/redhat $RPM_BUILD_ROOT%{_initrddir}/openais
+install -D init/redhat $RPM_BUILD_ROOT/etc/rc.d/init.d/openais
 install test/openais-cfgtool $RPM_BUILD_ROOT%{_sbindir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-#useradd -c 'openais Standards Based Cluster Framework' -u 39 -s /bin/false -r -d '/' ais
+%groupadd -g 187 ais
+%useradd -u 187 -d /usr/share/empty -s /bin/false -g ais -c "openais Standards Based Cluster Framework" -r ais
 
 %post
-/sbin/chkconfig --add openais
 /sbin/ldconfig
+/sbin/chkconfig --add openais
+%service openais restart
 
 %postun -p /sbin/ldconfig
 
@@ -75,8 +83,8 @@ fi
 %attr(755,root,root) %{_sbindir}/ais-keygen
 %attr(755,root,root) %{_sbindir}/openais-cfgtool
 %dir %{_sysconfdir}/ais
-%config(noreplace) %{_sysconfdir}/ais/openais.conf
-%config(noreplace) %{_sysconfdir}/ais/amf.conf
+%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/openais.conf
+%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/amf.conf
 %config /etc/ld.so.conf.d/openais-*.conf
 %attr(754,root,root) /etc/rc.d/init.d/openais
 %dir %{_libdir}/openais
@@ -88,7 +96,6 @@ fi
 
 %files devel
 %defattr(644,root,root,755)
-%doc CHANGELOG README.devmap
 %{_includedir}/openais
 %attr(755,root,root) %{_libdir}/openais/lib*.so
 %{_mandir}/man3/*.3*
