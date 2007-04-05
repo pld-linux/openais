@@ -1,4 +1,5 @@
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
+Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	0.80.2
 Release:	0.1
@@ -23,14 +24,23 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 This package contains the openais executive, openais service handlers,
 default configuration files and init script.
 
+%description -l pl.UTF-8
+Ten pakiet zawiera środowisko wykonawcze, programy obsługi usług
+openais, domyślne pliki konfiguracyjne oraz skrypt startowy.
+
 %package devel
-Summary:	The openais Standards-Based Cluster Framework libraries
+Summary:	The openais Standards-Based Cluster Framework development files
+Summary(pl.UTF-8):	Pliki programistyczne klastra opartego na standardach openais
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
-This package contains the libraries and include files used to develop
-using openais APIs.
+This package contains the include files used to develop using openais
+APIs.
+
+%description devel -l pl.UTF-8
+Ten pakiet zawiera pliki nagłówkow służące do programowania z użyciem
+API openais.
 
 %prep
 %setup -q
@@ -96,6 +106,6 @@ fi
 
 %files devel
 %defattr(644,root,root,755)
-%{_includedir}/openais
 %attr(755,root,root) %{_libdir}/openais/lib*.so
+%{_includedir}/openais
 %{_mandir}/man3/*.3*
