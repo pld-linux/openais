@@ -78,13 +78,18 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/chkconfig --add openais
 %service openais restart
 
-%postun -p /sbin/ldconfig
-
 %preun
 if [ "$1" -eq "0" ]; then
 	%service -q openais stop
 	/sbin/chkconfig --del openais
 fi
+
+%postun
+if [ "$1" = "0" ]; then
+	%userremove ais
+	%groupremove ais
+fi
+/sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
