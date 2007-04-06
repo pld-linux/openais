@@ -1,8 +1,10 @@
+# TODO
+# - discard /etc/ld.so.conf.d/openais-*.conf and use rpath instead
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	0.80.2
-Release:	0.1
+Release:	0.2
 License:	BSD
 Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
@@ -33,6 +35,7 @@ openais, domyślne pliki konfiguracyjne oraz skrypt startowy.
 Summary:	The openais Standards-Based Cluster Framework libraries
 Summary(pl.UTF-8):	Biblioteki klastra opartego na standardach openais
 Group:		Libraries
+Conflicts:	%{name} < 0.80.2-0.2
 
 %description libs
 This package contains the openais libraries.
