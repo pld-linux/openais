@@ -35,7 +35,7 @@ openais, domyślne pliki konfiguracyjne oraz skrypt startowy.
 Summary:	The openais Standards-Based Cluster Framework libraries
 Summary(pl.UTF-8):	Biblioteki klastra opartego na standardach openais
 Group:		Libraries
-Conflicts:	%{name} < 0.80.2-0.2
+Conflicts:	openais < 0.80.2-0.2
 
 %description libs
 This package contains the openais libraries.
