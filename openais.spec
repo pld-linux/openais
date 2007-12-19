@@ -3,12 +3,13 @@
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
-Version:	0.80.2
+Version:	0.82
 Release:	0.2
 License:	BSD
 Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
-# Source0-md5:	a1cfcd0e8f555132353b780c130d8220
+# Source0-md5:	d5b5ee8aa0ffcd1d308d93ff87b1ca5a
+Patch0:		%{name}-makefile.patch
 URL:		http://developer.osdl.org/dev/openais/
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
@@ -59,6 +60,7 @@ API openais.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %{__make} \
@@ -119,7 +121,7 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/openais
 %attr(755,root,root) %{_libdir}/lcrso/*.lcrso
 %{_mandir}/man8/*.8*
-%{_mandir}/man5/openais.conf.5*
+%{_mandir}/man5/*.5*
 
 %files libs
 %defattr(644,root,root,755)
