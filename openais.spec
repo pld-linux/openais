@@ -3,14 +3,13 @@
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
-Version:	0.82
-Release:	0.2
+Version:	0.80.3
+Release:	1
 License:	BSD
 Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
-# Source0-md5:	d5b5ee8aa0ffcd1d308d93ff87b1ca5a
-Patch0:		%{name}-makefile.patch
-URL:		http://developer.osdl.org/dev/openais/
+# Source0-md5:	05ac1e10abd31f500641ff48ecf4238f
+URL:		http://www.openais.org/
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
@@ -21,7 +20,6 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	group(ais)
 Provides:	user(ais)
-#ExclusiveArch:	%{ix86} %{x8664} ppc ppc64 ia64 s390 s390x
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -60,7 +58,6 @@ API openais.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %{__make} \
@@ -121,7 +118,7 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/openais
 %attr(755,root,root) %{_libdir}/lcrso/*.lcrso
 %{_mandir}/man8/*.8*
-%{_mandir}/man5/*.5*
+%{_mandir}/man5/openais.conf.5*
 
 %files libs
 %defattr(644,root,root,755)
