@@ -10,7 +10,7 @@ Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
 # Source0-md5:	d5b5ee8aa0ffcd1d308d93ff87b1ca5a
 Patch0:		%{name}-makefile.patch
-URL:		http://developer.osdl.org/dev/openais/
+URL:		http://www.openais.org/
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
