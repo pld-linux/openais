@@ -1,3 +1,4 @@
+# NOTE: for versions >0.80 see DEVEL branch
 # TODO
 # - discard /etc/ld.so.conf.d/openais-*.conf and use rpath instead
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
