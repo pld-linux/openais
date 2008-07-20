@@ -3,13 +3,12 @@
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
-Version:	0.82
-Release:	0.2
+Version:	0.84
+Release:	1
 License:	BSD
 Group:		Base
 Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
-# Source0-md5:	d5b5ee8aa0ffcd1d308d93ff87b1ca5a
-Patch0:		%{name}-makefile.patch
+# Source0-md5:	c0d4dc2bee121391e91354b538e12c87
 URL:		http://www.openais.org/
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
@@ -21,7 +20,6 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	group(ais)
 Provides:	user(ais)
-#ExclusiveArch:	%{ix86} %{x8664} ppc ppc64 ia64 s390 s390x
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -60,7 +58,6 @@ API openais.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %{__make} \
@@ -116,23 +113,69 @@ fi
 %attr(755,root,root) %{_sbindir}/ais-keygen
 %attr(755,root,root) %{_sbindir}/openais-cfgtool
 %dir %{_sysconfdir}/ais
-%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/openais.conf
 %verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/amf.conf
+%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/openais.conf
 %attr(754,root,root) /etc/rc.d/init.d/openais
 %attr(755,root,root) %{_libdir}/lcrso/*.lcrso
-%{_mandir}/man8/*.8*
-%{_mandir}/man5/*.5*
+%{_mandir}/man5/amf.conf.5*
+%{_mandir}/man5/openais.conf.5*
+%{_mandir}/man8/confdb_overview.8*
+%{_mandir}/man8/cpg_overview.8*
+%{_mandir}/man8/evs_overview.8*
+%{_mandir}/man8/logsys_overview.8*
+%{_mandir}/man8/openais_overview.8*
 
 %files libs
 %defattr(644,root,root,755)
 %dir %{_libdir}/openais
-%attr(755,root,root) %{_libdir}/openais/lib*.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/openais/lib*.so.?
+%attr(755,root,root) %{_libdir}/openais/libSaAmf.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaAmf.so.2
+%attr(755,root,root) %{_libdir}/openais/libSaCkpt.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaCkpt.so.2
+%attr(755,root,root) %{_libdir}/openais/libSaClm.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaClm.so.2
+%attr(755,root,root) %{_libdir}/openais/libSaEvt.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaEvt.so.2
+%attr(755,root,root) %{_libdir}/openais/libSaLck.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaLck.so.2
+%attr(755,root,root) %{_libdir}/openais/libSaMsg.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libSaMsg.so.2
+%attr(755,root,root) %{_libdir}/openais/libais.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libais.so.2
+%attr(755,root,root) %{_libdir}/openais/libaisutil.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libaisutil.so.2
+%attr(755,root,root) %{_libdir}/openais/libcfg.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libcfg.so.2
+%attr(755,root,root) %{_libdir}/openais/libconfdb.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libconfdb.so.2
+%attr(755,root,root) %{_libdir}/openais/libcpg.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libcpg.so.2
+%attr(755,root,root) %{_libdir}/openais/libevs.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libevs.so.2
+%attr(755,root,root) %{_libdir}/openais/liblogsys.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/liblogsys.so.2
+%attr(755,root,root) %{_libdir}/openais/libtotem_pg.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/openais/libtotem_pg.so.2
 %dir %{_libdir}/lcrso
 /etc/ld.so.conf.d/openais-*.conf
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/openais/lib*.so
+%attr(755,root,root) %{_libdir}/openais/libSaAmf.so
+%attr(755,root,root) %{_libdir}/openais/libSaCkpt.so
+%attr(755,root,root) %{_libdir}/openais/libSaClm.so
+%attr(755,root,root) %{_libdir}/openais/libSaEvt.so
+%attr(755,root,root) %{_libdir}/openais/libSaLck.so
+%attr(755,root,root) %{_libdir}/openais/libSaMsg.so
+%attr(755,root,root) %{_libdir}/openais/libais.so
+%attr(755,root,root) %{_libdir}/openais/libaisutil.so
+%attr(755,root,root) %{_libdir}/openais/libcfg.so
+%attr(755,root,root) %{_libdir}/openais/libconfdb.so
+%attr(755,root,root) %{_libdir}/openais/libcpg.so
+%attr(755,root,root) %{_libdir}/openais/libevs.so
+%attr(755,root,root) %{_libdir}/openais/liblogsys.so
+%attr(755,root,root) %{_libdir}/openais/libtotem_pg.so
 %{_includedir}/openais
-%{_mandir}/man3/*.3*
+%{_mandir}/man3/cpg_*.3*
+%{_mandir}/man3/confdb_*.3*
+%{_mandir}/man3/evs_*.3*
