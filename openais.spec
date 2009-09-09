@@ -1,16 +1,18 @@
-# NOTE: for versions >0.80 see DEVEL branch
-# TODO
-# - discard /etc/ld.so.conf.d/openais-*.conf and use rpath instead
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
-Version:	0.80.3
-Release:	1
+Version:	1.0.1
+Release:	0.1
 License:	BSD
 Group:		Base
-Source0:	http://developer.osdl.org/dev/openais/downloads/%{name}-%{version}/openais-%{version}.tar.gz
-# Source0-md5:	05ac1e10abd31f500641ff48ecf4238f
+Source0:	http://devresources.linux-foundation.org/dev/openais/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	dd40a6d6a89904e5e65116b560573aa7
 URL:		http://www.openais.org/
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	corosync-devel
+BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
@@ -19,6 +21,8 @@ Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	/sbin/chkconfig
+Requires:	crocosync
 Provides:	group(ais)
 Provides:	user(ais)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -57,29 +61,46 @@ APIs.
 Ten pakiet zawiera pliki nagłówkow służące do programowania z użyciem
 API openais.
 
+%package static
+Summary:	The openais Standards-Based Cluster Framework static libraries
+Summary(pl.UTF-8):	Statyczne biblioteki klastra opartego na standardach openais
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+This package contains the openais static libraries.
+
+%description static -l pl.UTF-8
+Ten pakiet zawiera statyczne biblioteki openais.
+
 %prep
 %setup -q
 
 %build
-%{__make} \
-	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags}" \
-	LCRSODIR=%{_libdir}/lcrso
+%{__aclocal}
+%{__autoconf}
+%{__automake}
+
+%configure \
+	--with-lcrso-dir=$(pkg-config corosync --variable lcrsodir)
+
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT \
-	LCRSODIR=%{_libdir}/lcrso \
-%if "%{_lib}" == lib64
-	ARCH=64 \
-%else
-	ARCH=32 \
-%endif
-	STATICLIBS=NO
+	DESTDIR=$RPM_BUILD_ROOT
 
 install -D init/redhat $RPM_BUILD_ROOT/etc/rc.d/init.d/openais
-install test/openais-cfgtool $RPM_BUILD_ROOT%{_sbindir}
+
+# Install the config and comment out all examples
+mv $RPM_BUILD_ROOT/etc/corosync/amf.conf{.example,}
+sed -i -e 's/\(^.*$\)/#\1/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
+
+# Cleanup the buildroot
+rm -rf $RPM_BUILD_ROOT/usr/share/doc/openais/
+# remove openais.conf now it is corosync.conf from corosync package
+rm -f $RPM_BUILD_ROOT/usr/share/man/man5/man5/openais.conf.5*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -109,28 +130,55 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc CHANGELOG LICENSE README.devmap README.amf SECURITY
+%doc CHANGELOG README.amf
 %attr(755,root,root) %{_sbindir}/aisexec
-%attr(755,root,root) %{_sbindir}/ais-keygen
-%attr(755,root,root) %{_sbindir}/openais-cfgtool
-%dir %{_sysconfdir}/ais
-%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/openais.conf
-%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/ais/amf.conf
+%attr(755,root,root) %{_sbindir}/openais-instantiate
+%verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/corosync/amf.conf
 %attr(754,root,root) /etc/rc.d/init.d/openais
 %attr(755,root,root) %{_libdir}/lcrso/*.lcrso
-%{_mandir}/man8/*.8*
-%{_mandir}/man5/openais.conf.5*
+%{_mandir}/man5/amf.conf.5*
+# do not package openais.conf - now it is corosync.conf from corosync package
+#%%{_mandir}/man5/openais.conf.5*
+%{_mandir}/man8/openais_overview.8*
 
 %files libs
 %defattr(644,root,root,755)
-%dir %{_libdir}/openais
-%attr(755,root,root) %{_libdir}/openais/lib*.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/openais/lib*.so.?
-%dir %{_libdir}/lcrso
-/etc/ld.so.conf.d/openais-*.conf
+%attr(755,root,root) %{_libdir}/libSaAmf.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaAmf.so.3
+%attr(755,root,root) %{_libdir}/libSaCkpt.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaCkpt.so.3
+%attr(755,root,root) %{_libdir}/libSaClm.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaClm.so.3
+%attr(755,root,root) %{_libdir}/libSaEvt.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaEvt.so.3
+%attr(755,root,root) %{_libdir}/libSaLck.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaLck.so.3
+%attr(755,root,root) %{_libdir}/libSaMsg.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaMsg.so.3
+%attr(755,root,root) %{_libdir}/libSaTmr.so.3.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaTmr.so.3
+
+#/etc/ld.so.conf.d/openais-*.conf
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/openais/lib*.so
+%attr(755,root,root) %{_libdir}/libSaAmf.so
+%attr(755,root,root) %{_libdir}/libSaCkpt.so
+%attr(755,root,root) %{_libdir}/libSaClm.so
+%attr(755,root,root) %{_libdir}/libSaEvt.so
+%attr(755,root,root) %{_libdir}/libSaLck.so
+%attr(755,root,root) %{_libdir}/libSaMsg.so
+%attr(755,root,root) %{_libdir}/libSaTmr.so
 %{_includedir}/openais
-%{_mandir}/man3/*.3*
+%{_pkgconfigdir}/*.pc
+#%{_mandir}/man3/*.3*
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libSaAmf.a
+%{_libdir}/libSaCkpt.a
+%{_libdir}/libSaClm.a
+%{_libdir}/libSaEvt.a
+%{_libdir}/libSaLck.a
+%{_libdir}/libSaMsg.a
+%{_libdir}/libSaTmr.a
