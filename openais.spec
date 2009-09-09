@@ -2,7 +2,7 @@ Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	1.0.1
-Release:	0.1
+Release:	1
 License:	BSD
 Group:		Base
 Source0:	http://devresources.linux-foundation.org/dev/openais/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
@@ -158,8 +158,6 @@ fi
 %attr(755,root,root) %{_libdir}/libSaTmr.so.3.*.*
 %attr(755,root,root) %ghost %{_libdir}/libSaTmr.so.3
 
-#/etc/ld.so.conf.d/openais-*.conf
-
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libSaAmf.so
@@ -171,7 +169,6 @@ fi
 %attr(755,root,root) %{_libdir}/libSaTmr.so
 %{_includedir}/openais
 %{_pkgconfigdir}/*.pc
-#%{_mandir}/man3/*.3*
 
 %files static
 %defattr(644,root,root,755)
