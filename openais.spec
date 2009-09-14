@@ -2,7 +2,7 @@ Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	1.0.1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Base
 Source0:	http://devresources.linux-foundation.org/dev/openais/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
@@ -22,7 +22,7 @@ Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	/sbin/chkconfig
-Requires:	crocosync
+Requires:	corosync
 Provides:	group(ais)
 Provides:	user(ais)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
