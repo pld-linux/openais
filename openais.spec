@@ -1,12 +1,12 @@
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
-Version:	1.1.0
+Version:	1.1.3
 Release:	1
 License:	BSD
 Group:		Base
-Source0:	http://devresources.linux-foundation.org/dev/openais/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	6b73c7438e230c31aec53d6af78a6b0d
+Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	13d8d590f806fb396d750b086c6c0b78
 URL:		http://www.openais.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -91,8 +91,6 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install -D init/redhat $RPM_BUILD_ROOT/etc/rc.d/init.d/openais
-
 # Install the config and comment out all examples
 mv $RPM_BUILD_ROOT/etc/corosync/amf.conf{.example,}
 sed -i -e 's/\(^.*$\)/#\1/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
@@ -134,7 +132,7 @@ fi
 %attr(755,root,root) %{_sbindir}/aisexec
 %attr(755,root,root) %{_sbindir}/openais-instantiate
 %verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/corosync/amf.conf
-%attr(754,root,root) /etc/rc.d/init.d/openais
+%attr(754,root,root) /etc/init.d/openais
 %attr(755,root,root) %{_libdir}/lcrso/*.lcrso
 %{_mandir}/man5/amf.conf.5*
 # do not package openais.conf - now it is corosync.conf from corosync package
@@ -153,8 +151,8 @@ fi
 %attr(755,root,root) %ghost %{_libdir}/libSaEvt.so.3
 %attr(755,root,root) %{_libdir}/libSaLck.so.3.*.*
 %attr(755,root,root) %ghost %{_libdir}/libSaLck.so.3
-%attr(755,root,root) %{_libdir}/libSaMsg.so.3.*.*
-%attr(755,root,root) %ghost %{_libdir}/libSaMsg.so.3
+%attr(755,root,root) %{_libdir}/libSaMsg.so.4.*.*
+%attr(755,root,root) %ghost %{_libdir}/libSaMsg.so.4
 %attr(755,root,root) %{_libdir}/libSaTmr.so.3.*.*
 %attr(755,root,root) %ghost %{_libdir}/libSaTmr.so.3
 
