@@ -8,11 +8,12 @@ Group:		Base
 Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	e500ad3c49fdc45d8653f864e80ed82c
 URL:		http://www.openais.org/
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
 BuildRequires:	corosync-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires(postun):	/usr/sbin/groupdel
 Requires(postun):	/usr/sbin/userdel
@@ -21,7 +22,6 @@ Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	/sbin/chkconfig
 Requires:	corosync
 Provides:	group(ais)
 Provides:	user(ais)
@@ -76,12 +76,15 @@ Ten pakiet zawiera statyczne biblioteki openais.
 %prep
 %setup -q
 
+sed -i -e 's/OPT_CFLAGS=.*/OPT_CFLAGS=/' configure.ac
+
 %build
 %{__aclocal}
 %{__autoconf}
 %{__automake}
 
 %configure \
+	--with-initddir=/etc/rc.d/init.d \
 	--with-lcrso-dir=$(pkg-config corosync --variable lcrsodir)
 
 %{__make}
@@ -93,12 +96,10 @@ rm -rf $RPM_BUILD_ROOT
 
 # Install the config and comment out all examples
 mv $RPM_BUILD_ROOT/etc/corosync/amf.conf{.example,}
-sed -i -e 's/\(^.*$\)/#\1/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
+sed -i -e 's/^/#/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
 
 # Cleanup the buildroot
-rm -rf $RPM_BUILD_ROOT/usr/share/doc/openais/
-# remove openais.conf now it is corosync.conf from corosync package
-rm -f $RPM_BUILD_ROOT/usr/share/man/man5/man5/openais.conf.5*
+%{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/openais
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -132,11 +133,11 @@ fi
 %attr(755,root,root) %{_sbindir}/aisexec
 %attr(755,root,root) %{_sbindir}/openais-instantiate
 %verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/corosync/amf.conf
-%attr(754,root,root) /etc/init.d/openais
-%attr(755,root,root) %{_libdir}/lcrso/*.lcrso
+%attr(754,root,root) /etc/rc.d/init.d/openais
+%attr(755,root,root) %{_libdir}/lcrso/openaisserviceenable.lcrso
+%attr(755,root,root) %{_libdir}/lcrso/service_*.lcrso
 %{_mandir}/man5/amf.conf.5*
-# do not package openais.conf - now it is corosync.conf from corosync package
-#%%{_mandir}/man5/openais.conf.5*
+%{_mandir}/man5/openais.conf.5*
 %{_mandir}/man8/openais_overview.8*
 
 %files libs
@@ -166,7 +167,13 @@ fi
 %attr(755,root,root) %{_libdir}/libSaMsg.so
 %attr(755,root,root) %{_libdir}/libSaTmr.so
 %{_includedir}/openais
-%{_pkgconfigdir}/*.pc
+%{_pkgconfigdir}/libSaAmf.pc
+%{_pkgconfigdir}/libSaCkpt.pc
+%{_pkgconfigdir}/libSaClm.pc
+%{_pkgconfigdir}/libSaEvt.pc
+%{_pkgconfigdir}/libSaLck.pc
+%{_pkgconfigdir}/libSaMsg.pc
+%{_pkgconfigdir}/libSaTmr.pc
 
 %files static
 %defattr(644,root,root,755)
