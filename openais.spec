@@ -2,7 +2,7 @@ Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	1.1.4
-Release:	1
+Release:	2
 License:	BSD
 Group:		Base
 Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
