@@ -7,12 +7,13 @@ Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	1.1.4
-Release:	2.1
+Release:	2.2
 License:	BSD
 Group:		Base
 Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	e500ad3c49fdc45d8653f864e80ed82c
 Source1:	%{name}.init
+Source2:	%{name}.service
 URL:		http://www.openais.org/
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
@@ -97,7 +98,7 @@ sed -i -e 's/OPT_CFLAGS=.*/OPT_CFLAGS=/' configure.ac
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -d $RPM_BUILD_ROOT{/etc/rc.d/init.d,%{systemdunitdir}}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -110,6 +111,7 @@ sed -i -e 's/^/#/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
 %{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/openais
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+install %{SOURCE2} $RPM_BUILD_ROOT%{systemdunitdir}/%{name}.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -147,6 +149,7 @@ fi
 %attr(755,root,root) %{_sbindir}/openais-instantiate
 %verify(not md5 mtime size) %config(noreplace) %{_sysconfdir}/corosync/amf.conf
 %attr(754,root,root) /etc/rc.d/init.d/openais
+%{systemdunitdir}/%{name}.service
 %attr(755,root,root) %{_libdir}/lcrso/openaisserviceenable.lcrso
 %attr(755,root,root) %{_libdir}/lcrso/service_*.lcrso
 %{_mandir}/man5/amf.conf.5*
