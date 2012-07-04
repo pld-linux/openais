@@ -1,0 +1,103 @@
+#!/bin/sh
+#
+# openais	OpenAIS Cluster Framework
+#
+# chkconfig: 2345 20 80
+# description: OpenAIS Cluster Framework
+# processname: corosync
+#
+### BEGIN INIT INFO
+# Provides:		corosync
+# Required-Start:	$network $syslog
+# Required-Stop:	$network $syslog
+# Default-Start:
+# Default-Stop:
+# Short-Description:	Starts and stops OpenAIS Cluster Framework
+# Description:		Starts and stops OpenAIS Cluster Framework
+### END INIT INFO
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+[ -f /etc/sysconfig/openais ] && . /etc/sysconfig/openais
+
+start() {
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/corosync ]; then
+		msg_already_running "Corosync Cluster Engine"
+		echo "You should stop bare Corosync before starting OpenAIS" >&2
+		RETVAL=1
+		return
+	fi
+	if [ -f /var/lock/subsys/openais ]; then
+		msg_already_running "OpenAIS Cluster Framework"
+		return
+	fi
+	if grep -q nocluster /proc/cmdline ; then
+		show "Disabled on boot"
+		RETVAL=1
+		return
+	fi
+
+	msg_starting "OpenAIS Cluster Framework"
+	daemon /usr/sbin/aisexec
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/openais
+}
+
+stop() {
+	if [ ! -f /var/lock/subsys/openais ]; then
+		msg_not_running "OpenAIS Cluster Framework"
+		return
+	fi
+
+	# Stop daemons.
+	msg_stopping "OpenAIS Cluster Framework"
+	killproc /usr/sbin/corosync
+	rm -f /var/lock/subsys/openais
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/openais ]; then
+		msg_not_running "OpenAIS Cluster Framework"
+		RETVAL=$1
+		return
+	fi
+
+	stop
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+   	sleep 5
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+  force-reload)
+	condrestart 7
+	;;
+  status)
+	if [ -f /var/lock/subsys/corosync ] ; then
+		# not report bare corosync as openais
+		status openais
+	else	
+		status openais corosync
+	fi
+	RETVAL=$?
+	;;
+*)
+	msg_usage "$0 {start|stop|restart|try-restart|force-reload|status}"
+	exit 3
+	;;
+esac
+exit $RETVAL

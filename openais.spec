@@ -1,12 +1,18 @@
+#
+# Note: not mainained upstream any more but still needed for
+#       3rd generation 'cluster' package and clvmd under corosync
+#       holds upgrade to corosync 2.x, though
+#
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
 Name:		openais
 Version:	1.1.4
-Release:	2
+Release:	2.1
 License:	BSD
 Group:		Base
 Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	e500ad3c49fdc45d8653f864e80ed82c
+Source1:	%{name}.init
 URL:		http://www.openais.org/
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
@@ -91,6 +97,8 @@ sed -i -e 's/OPT_CFLAGS=.*/OPT_CFLAGS=/' configure.ac
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
+
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
@@ -101,6 +109,8 @@ sed -i -e 's/^/#/' $RPM_BUILD_ROOT/etc/corosync/amf.conf
 # Cleanup the buildroot
 %{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/openais
 
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -109,20 +119,23 @@ rm -rf $RPM_BUILD_ROOT
 %useradd -u 187 -d /usr/share/empty -s /bin/false -g ais -c "openais Standards Based Cluster Framework" -r ais
 
 %post
-/sbin/chkconfig --add openais
-%service openais restart
+/sbin/chkconfig --add %{name}
+%service %{name} restart
+%systemd_post %{name}.service
 
 %preun
 if [ "$1" -eq "0" ]; then
-	%service -q openais stop
-	/sbin/chkconfig --del openais
+	%service -q %{name} stop
+	/sbin/chkconfig --del %{name}
 fi
+%systemd_preun %{name}.service
 
 %postun
 if [ "$1" = "0" ]; then
 	%userremove ais
 	%groupremove ais
 fi
+%systemd_reload
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
