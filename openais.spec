@@ -1,7 +1,7 @@
 #
-# Note: not mainained upstream any more but still needed for
-#       3rd generation 'cluster' package and clvmd under corosync
-#       holds upgrade to corosync 2.x, though
+# Note: not maintained upstream any more.
+# Needed for 3rd generation 'cluster' package and clvmd with corosync/openais support.
+# In order to build use corosync 1.x (from corosync-1_4 branch).
 #
 Summary:	The openais Standards-Based Cluster Framework executive and APIs
 Summary(pl.UTF-8):	Środowisko klastra opartego na standardach openais
@@ -17,7 +17,8 @@ Source2:	%{name}.service
 URL:		http://www.openais.org/
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
-BuildRequires:	corosync-devel
+BuildRequires:	corosync-devel >= 1.0
+BuildRequires:	corosync-devel < 2
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	sed >= 4.0
@@ -29,7 +30,8 @@ Requires(pre):	/usr/bin/getgid
 Requires(pre):	/usr/sbin/groupadd
 Requires(pre):	/usr/sbin/useradd
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	corosync
+Requires:	corosync >= 1.0
+Requires:	corosync < 2
 Provides:	group(ais)
 Provides:	user(ais)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
