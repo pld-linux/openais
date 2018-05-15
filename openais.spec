@@ -10,11 +10,12 @@ Version:	1.1.4
 Release:	2.2
 License:	BSD
 Group:		Base
-Source0:	ftp://ftp:download@ftp.openais.org/downloads/%{name}-%{version}/%{name}-%{version}.tar.gz
+#Source0Download: https://github.com/corosync/openais/releases
+Source0:	https://github.com/corosync/openais/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	e500ad3c49fdc45d8653f864e80ed82c
 Source1:	%{name}.init
 Source2:	%{name}.service
-URL:		http://www.openais.org/
+URL:		https://github.com/corosync/openais
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
 BuildRequires:	corosync-devel >= 1.0
